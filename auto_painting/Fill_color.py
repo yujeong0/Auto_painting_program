@@ -19,7 +19,6 @@ class Fill_color(object):
             if origin is None or origin_color is None:
                 print('Not found '+filename)
             else:
-                print('이진화시작')
                 bin_img = self.binarize(origin, 220)
                 open_img = self.image_open(bin_img)
                 reverse_img = self.reverse(open_img)
@@ -28,13 +27,8 @@ class Fill_color(object):
                 color_img = self.fill_color(origin_color,transform,[0,0,255])
                 # cv2.imshow('Result',color_img)
                 cv2.imwrite('./multi_img_data/result/result.png', color_img)
-                print('파일쓰기 끝')
                 self.file = './multi_img_data/result/result.png'
-                print('self 넣어줌')
                 # cv2.waitKey(0)
-
-
-
 
     def binarize(self, img, threshold):
         # 이진화

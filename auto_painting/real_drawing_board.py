@@ -12,7 +12,6 @@ class drawing_board(QWidget):
     def __init__(self):
         super().__init__()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 화면크기스케일링
-        # self.file = 'apple.png'
         self.file = ''
 
         # 전체 폼 박스
@@ -115,24 +114,15 @@ class drawing_board(QWidget):
 
         # 우 레이아웃 박스에 그래픽 뷰 추가
         self.view = CView(self)
+        self.view.setFixedWidth(300)
+        self.view.setFixedHeight(300)
         right.addWidget(self.view)
 
-        # # 제일 오른쪽 레이아웃에 빈 흰색 배경
-        # pixmap = QPixmap('whiteimage.png')  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
-        # lbl_img = QLabel()
-        # lbl_img.setPixmap(pixmap)
-        # self.right2.addWidget(lbl_img)
-
-        # # 제일 오른쪽 레이아웃에 사진 넣을거임
-        # pixmap = QPixmap('apple.png')    # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
-        #
-        # lbl_img = QLabel()
-        # lbl_img.setPixmap(pixmap)
-        # # lbl_size = QLabel('Width: ' + str(pixmap.width()) + ', Height: ' + str(pixmap.height()))
-        # # lbl_size.setAlignment(Qt.AlignCenter)
-        #
-        # right2.addWidget(lbl_img)
-        # # right2.addWidget(lbl_size)
+        # 제일 오른쪽 레이아웃에 빈 흰색 배경
+        pixmap = QPixmap('whiteimage.png')
+        self.lbl_img = QLabel()
+        self.lbl_img.setPixmap(pixmap)
+        self.right2.addWidget(self.lbl_img)
 
         # 전체 폼박스에 레이아웃 박스 배치
         formbox.addLayout(left)
@@ -142,7 +132,7 @@ class drawing_board(QWidget):
         formbox.setStretchFactor(left, 0)
         formbox.setStretchFactor(right, 1)
 
-        self.setGeometry(100, 100, 1500, 500)
+        self.setGeometry(100, 100, 700, 400)
 
     def radioClicked(self):
         for i in range(len(self.radiobtns)):
@@ -183,35 +173,29 @@ class drawing_board(QWidget):
             self.view.scene.removeItem(i)
 
     def load_image(self):
-        label = classification().label
+        self.lbl_img.hide()     # 전 이미지 숨김
+
+        label = classification().label  # 이미지 분류
         print(label)
 
-        fill = Fill_color(self.file)
+        fill = Fill_color(self.file)    #이미지 색칠
         self.file = fill.file
         print(self.file)
 
-        # 제일 오른쪽 레이아웃에 사진 넣을거임
         pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
 
-        lbl_img = QLabel()
-        lbl_img.setPixmap(pixmap)
-        # lbl_size = QLabel('Width: ' + str(pixmap.width()) + ', Height: ' + str(pixmap.height()))
-        # lbl_size.setAlignment(Qt.AlignCenter)
-
-        self.right2.addWidget(lbl_img)
-        # right2.addWidget(lbl_size)
+        self.lbl_img = QLabel()
+        self.lbl_img.setPixmap(pixmap)
+        self.right2.addWidget(self.lbl_img)
 
 
 # QGraphicsView display QGraphicsScene
 class CView(QGraphicsView):
 
     def __init__(self, parent):
-
         super().__init__(parent)
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
-        self.photo = QGraphicsPixmapItem()
-        self.scene.addItem(self.photo)
 
         self.items = []
 

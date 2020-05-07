@@ -10,7 +10,7 @@ class make_model:
     def make_npy_file(self):
         caltech_dir = "./multi_img_data/imgs_others/train"
 
-        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf"]
+        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf", "carrot", "shellfish"]
         nb_classes = len(categories)
         print(nb_classes)
 
@@ -70,7 +70,7 @@ class make_model:
         print(X_train.shape[0])
 
 
-        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf"]
+        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf", "carrot", "shellfish"]
         nb_classes = len(categories)
 
         X_train = X_train.astype(float) / 255

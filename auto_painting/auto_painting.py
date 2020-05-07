@@ -9,6 +9,7 @@ from PyQt5.QtGui import *
 
 class auto_painting:
     def __init__(self):
+        # make_model()      # 모델 없을 때만 하기~!
         self.painting()
 
     def painting(self):

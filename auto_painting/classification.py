@@ -10,8 +10,6 @@ class classification:
         self.label = ''
         self.classify()
 
-
-
     def classify(self):
         caltech_dir = "./multi_img_data/imgs_others_test_sketch"
 
@@ -51,6 +49,8 @@ class classification:
             elif pre_ans == 3: pre_ans_str = "꽃"
             elif pre_ans == 4: pre_ans_str = "아보카도"
             elif pre_ans == 5: pre_ans_str = "나뭇잎"
+            elif pre_ans == 6: pre_ans_str = "당근"
+            elif pre_ans == 7: pre_ans_str = "조개"
 
             if i[0] >= 0.8:
                 print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
@@ -70,6 +70,12 @@ class classification:
             elif i[5] >= 0.8:
                 print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
                 self.label = 'leaf'
+            elif i[6] >= 0.8:
+                print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
+                self.label = 'carrot'
+            elif i[7] >= 0.8:
+                print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
+                self.label = 'shellfish'
             else:
                 print("해당 이미지는 없는 데이터입니다.")
                 self.label = 'none'
