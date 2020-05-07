@@ -40,8 +40,8 @@ class drawing_board(QWidget):
             self.radiobtns[i].clicked.connect(self.radioClicked)
             box.addWidget(self.radiobtns[i])
 
-        self.radiobtns[0].setChecked(True)
-        self.drawType = 0
+        self.radiobtns[1].setChecked(True)
+        self.drawType = 1
 
         # 그룹박스2
         gb = QGroupBox('펜 설정')
@@ -56,7 +56,7 @@ class drawing_board(QWidget):
         self.combo = QComboBox()
         grid.addWidget(self.combo, 0, 1)
 
-        for i in range(1, 21):
+        for i in range(4, 21):
             self.combo.addItem(str(i))
 
         label = QLabel('선색상')
@@ -232,7 +232,7 @@ class CView(QGraphicsView):
                 self.start = e.pos()
                 return None
 
-            pen = QPen(self.parent().pencolor, self.parent().combo.currentIndex())
+            pen = QPen(self.parent().pencolor, self.parent().combo.currentIndex()+3)
 
             # 직선 그리기
             if self.parent().drawType == 0:
