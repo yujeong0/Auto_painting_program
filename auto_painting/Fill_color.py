@@ -1,117 +1,243 @@
-# -*- cording : utf-8 -*-
-# 색을 단색이 아니도록 추가해야함
-
 import cv2
-import numpy as np
+import copy
+import random
+import math
 
 class Fill_color(object):
-    def __init__(self, filename):
+    def __init__(self, filename, label):
         self.file = ''
-        self.start(filename)
+        self.start(filename, label)
 
-    def start(self, filename):
-        # while True:
-            # file = input('$ File Name: ')
-            # file = './multi_img_data/imgs_others_test_sketch/' + filename
-            origin = cv2.imread(filename,0)
-            origin_color = cv2.imread(filename)
+    def start(self, file_name, label):
+        # label {0:사과 , 1:체리 , 2:토마토}
+        origin_img = cv2.imread(file_name)
+        if origin_img is None:
+            print('====================== error - not found : ' + file_name + '======================')
+            return
 
-            if origin is None or origin_color is None:
-                print('Not found '+filename)
-            else:
-                bin_img = self.binarize(origin, 220)
-                open_img = self.image_open(bin_img)
-                reverse_img = self.reverse(open_img)
-                dilate_img = self.image_dilate(reverse_img, 1, 1)
-                white_img, transform = self.fill_white(reverse_img, dilate_img)
-                color_img = self.fill_color(origin_color,transform,[0,0,255])
-                # cv2.imshow('Result',color_img)
-                cv2.imwrite('./multi_img_data/result/result.png', color_img)
-                self.file = './multi_img_data/result/result.png'
-                # cv2.waitKey(0)
+        gray_img = cv2.imread(file_name,0)
+        bin_img = self.binarize(gray_img, 250)
+
+        sg_img , count = self.segmentation(bin_img)
+        result = self.segmentation_image_show(origin_img,sg_img, label)
+        result = self.natual_coloring(result, 100)
+        cv2.imwrite('./multi_img_data/result/result.png', result)
+        self.file = './multi_img_data/result/result.png'
+
 
     def binarize(self, img, threshold):
         # 이진화
         ret, bin_img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
         return bin_img
 
-    def image_open(self, img, kernel_size=5):
-        # 열기
-        kernel = np.ones((kernel_size, kernel_size), np.uint8)
-        result = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-        return result
+    # def segmentation(self, img):
+    #     segmentation_img = copy.deepcopy(img)
+    #     offset = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    #     count = 0
+    #     start_point = []
+    #
+    #     for i in range(len(img)):
+    #         for j in range(len(img[0])):
+    #             if segmentation_img[i][j] == 255:
+    #                 start_point.append([i, j])
+    #                 count += 1
+    #                 q = [[i, j]]
+    #                 while q:
+    #                     cur = q.pop(0)
+    #                     x, y = cur[0], cur[1]
+    #                     if x < 0 or y < 0:
+    #                         pass
+    #                     elif x > len(img) - 1 or y > len(img[0]) - 1:
+    #                         pass
+    #                     elif segmentation_img[x][y] != 255:
+    #                         pass
+    #                     else:
+    #                         segmentation_img[x][y] = count
+    #                         for i in range(4):
+    #                             q.append([x + offset[i][0], y + offset[i][1]])
+    #     return segmentation_img
+    #
+    # def segmentation_image_show(self, origin_img, segmentation_img, color, xy):
+    #     color_img = copy.deepcopy(origin_img)
+    #     color_count = segmentation_img[xy[0]][xy[1]]
+    #
+    #     for i in range(len(segmentation_img)):
+    #         for j in range(len(segmentation_img[0])):
+    #             if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count:
+    #                 color_img[i][j] = color
+    #     self.natual_coloring(color_img,50)
+    #     return color_img
+    #
+    # def natual_coloring(self, img, value):
+    #     random_num = random.randrange(125,175)
+    #     for i in range(random_num-value,random_num+value):
+    #         for j in range(random_num-value,random_num+value):
+    #             d = self.p2p_dst(i,j,random_num,random_num)
+    #             if d <= value and self.img2np(img[i][j],[0,0,0]) and self.img2np(img[i][j],[255,255,255]):
+    #                 for k in range(0,3):
+    #                     img[i][j][k] = self.check255(img[i][j][k] + value - d)
+    #     # img = cv2.GaussianBlur(img, (11, 11), 0)
+    #
+    # def p2p_dst(self,x1,y1,x2,y2):
+    #     return int(math.sqrt((x2-x1)**2 + (y2-y1)**2))
+    #
+    # def img2np(self,v1,v2):
+    #     if v1[0] == v2[0] and v1[1] == v2[1] and v1[2] == v2[2]:
+    #         return False
+    #     return True
+    #
+    # def check255(self,v):
+    #     if v >= 255:
+    #         return 255
+    #     return v
+    #
+    # def filter(self, img):
+    #     ft = cv2.imread('ra.png')
+    #     for i in range(0,len(img)):
+    #         for j in range(0,len(img[0])):
+    #             if [img[i][j][0],img[i][j][1],img[i][j][2]] !=[255,255,255] and [img[i][j][0],img[i][j][1],img[i][j][2]] !=[0,0,0]:
+    #                 # 명도 사용하기
+    #                 img[i][j][0] = img[i][j][0] + ft[i][j][0]
+    #                 img[i][j][1] = img[i][j][1] + ft[i][j][1]
+    #                 img[i][j][2] = img[i][j][2] + ft[i][j][2]
+    #
+    #                 ## 그대로 가져오기
+    #                 # img[i][j][0] = ft[i][j][0]
+    #                 # img[i][j][1] = ft[i][j][1]
+    #                 # img[i][j][2] = ft[i][j][2]
 
-    def reverse(self, img):
-        # 밝기 반전
+    def segmentation(self, img):
+        segmentation_img = copy.deepcopy(img)
+        offset = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+        count = 0
+        start_point = []
+
         for i in range(len(img)):
             for j in range(len(img[0])):
-                if img[i][j] == 0:
-                    img[i][j] = 255
-                else:
-                    img[i][j] = 0
+                if segmentation_img[i][j] == 255:
+                    start_point.append([i,j])
+                    count += 1
+
+                    q = [[i,j]]
+                    while q:
+                        cur = q.pop(0)
+                        x, y = cur[0], cur[1]
+                        if x < 0 or y < 0:
+                            pass
+                        elif x > len(img) - 1 or y > len(img[0]) - 1:
+                            pass
+                        elif segmentation_img[x][y] != 255:
+                            pass
+                        else:
+                            segmentation_img[x][y] = count
+                            for i in range(4):
+                                q.append([x + offset[i][0], y + offset[i][1]])
+        return [segmentation_img, count]
+
+    def segmentation_image_show(self,origin_img, segmentation_img , label):
+        color_img = copy.deepcopy(origin_img)
+        # print(count) # 세그먼트 개수 출력
+        # [4,2,173] # 체리색
+
+        color_count = self.return_size(copy.deepcopy(segmentation_img),3)
+        if label == 'apple':
+            # 사과
+            color = [0,0,255]
+            for i in range(len(segmentation_img)):
+                for j in range(len(segmentation_img[0])):
+                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[0]:
+                        color_img[i][j] = color
+        elif label == 'cherry':
+            # 체리
+            color = [4,2,173]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color
+        elif label == 'tomato':
+            # 토마토
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        elif label == 'avocado':
+            # 아보카도
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        elif label == 'flower':
+            # 꽃
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        elif label == 'leaf':
+            # 잎
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        elif label == 'shellfish':
+            # 조개
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        elif label == 'carrot':
+            # 당근
+            color = [[0,0,255],[0,255,0]]
+            for seg_cnt in range(2):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] == color_count[seg_cnt]:
+                            color_img[i][j] = color[seg_cnt]
+        return color_img
+
+    def return_size(self,img, return_num):
+        count_list = [0] * 255
+        for i in range(len(img)):
+            for j in range(len(img[0])):
+                if img[i][j] != 255 and img[i][j] != 0 and img[i][j] != 1:
+                    count_list[img[i][j]] += 1
+
+        count_sort_list = []
+        for i in range(return_num):
+            count_sort_list.append(count_list.index(max(count_list)))
+            count_list[count_sort_list[i]] = 0
+        return count_sort_list
+
+    def natual_coloring(self, img, value):
+        random_num = random.randrange(125,175)
+        for i in range(random_num-value,random_num+value):
+            for j in range(random_num-value,random_num+value):
+                d = self.p2p_dst(i,j,random_num,random_num)
+                if d <= value and self.img2np(img[i][j],[0,0,0]) and self.img2np(img[i][j],[255,255,255]):
+                    for k in range(0,3):
+                        img[i][j][k] = self.check255(img[i][j][k] + value - d)
         return img
+        # img = cv2.GaussianBlur(img, (11, 11), 0)
 
-    def image_dilate(self, img, kernel_size, n):
-        #팽창
-        for i in range(n):
-            kernel = np.ones((kernel_size, kernel_size), np.uint8)
-            img = cv2.dilate(img, kernel, iterations=1)
-        return img
+    def p2p_dst(self,x1,y1,x2,y2):
+        return int(math.sqrt((x2-x1)**2 + (y2-y1)**2))
 
-    def fill_white(self, img1, img2):
-        x, y = int(len(img1) / 2), int(len(img1[0]) / 2)
-        color = img2[:]
-        q = [[x, y]]
-        offset = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-        transform = []
-        while q:
-            cur = q.pop(0)
-            x, y = cur[0], cur[1]
-            if x < 0 or y < 0:
-                pass
-            elif x > len(color)-1 or y > len(color[0])-1:
-                pass
-            elif color[x][y] == 255:
-                pass
-            else:
-                color[x][y] = 255
-                transform.append([x, y])
-                for i in range(4):
-                    q.append([x + offset[i][0], y + offset[i][1]])
-        return [color, transform]
+    def img2np(self,v1,v2):
+        if v1[0] == v2[0] and v1[1] == v2[1] and v1[2] == v2[2]:
+            return False
+        return True
 
-    # 픽셀값 변경하면서 해보는중
-    def fill_color(self, img, transform, color):
-        for t in transform:
-            img[t[0]][t[1]] = np.array(color)
-        return img
-
-    # def fill_color(self, img, transform, color):
-    #     count = 0
-    #     temp_color = copy.deepcopy(color)
-    #
-    #     for t in transform:
-    #         img[t[0]][t[1]] = np.array(temp_color)
-    #
-    #         if count >= 100:
-    #             temp_color = copy.deepcopy(color)
-    #             count = count % 100
-    #         else:
-    #             temp_color[0] += 3
-    #             temp_color[1] += 3
-    #             count += 3
-    #     dst = cv2.GaussianBlur(img, (5, 5), 0)
-    #     return dst
-
-#     def fill_color(self, img, transform, color):
-#         r, g ,b = color[2], color[1], color[0]
-
-#         for t in transform:
-#             temp_color = [b + random.randrange(10,100),g + random.randrange(10,100), r]
-#             img[t[0]][t[1]] = np.array(temp_color)
-
-#         dst = cv2.GaussianBlur(img, (5, 5), 0)
-#         return dst
-#
-# main = Fill_color()
-# main.start()
+    def check255(self,v):
+        if v >= 255:
+            return 255
+        return v
