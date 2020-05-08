@@ -1,11 +1,10 @@
-
 from PIL import Image
 import os, glob, numpy as np
 from keras.models import load_model
 import cv2
 # from Segmentation import Segmentation
 
-class classification:
+class classification():
     def __init__(self):
         self.label = ''
         self.classify()
@@ -81,4 +80,3 @@ class classification:
                 self.label = 'none'
 
             cnt += 1
-
