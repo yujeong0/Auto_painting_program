@@ -176,9 +176,9 @@ class drawing_board(QWidget):
         self.lbl_img.hide()     # 전 이미지 숨김
 
         label = classification().label  # 이미지 분류
-        print(label)
+        # print(label)
 
-        fill = Fill_color(self.file)    #이미지 색칠
+        fill = Fill_color(self.file, label)    #이미지 색칠
         self.file = fill.file
         print(self.file)
 
