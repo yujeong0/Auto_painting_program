@@ -101,14 +101,14 @@ class drawing_board(QWidget):
         removebutton.clicked.connect(self.remove_all)
 
         # 사진저장 버튼
-        savebutton = QPushButton('그림 저장', self)
-        left.addWidget(savebutton)
-        savebutton.clicked.connect(self.save_image)
+        # savebutton = QPushButton('그림 저장', self)
+        # left.addWidget(savebutton)
+        # savebutton.clicked.connect(self.save_image)
 
         # painting 버튼
-        paintingbutton = QPushButton('Painting!!', self)
+        paintingbutton = QPushButton('자동 채색', self)
         left.addWidget(paintingbutton)
-        paintingbutton.clicked.connect(lambda: self.load_image())    # 앞에 lambda: 붙여야되는 이유가 뭘까.. 뺴면 오류나서 넣음..
+        paintingbutton.clicked.connect(self.load_image)
 
         left.addStretch(1)  # 그냥 레이아웃 여백 추가
 
@@ -173,6 +173,7 @@ class drawing_board(QWidget):
             self.view.scene.removeItem(i)
 
     def load_image(self):
+        self.save_image()
         self.lbl_img.hide()     # 전 이미지 숨김
 
         label = classification().label  # 이미지 분류
