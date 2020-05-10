@@ -8,7 +8,6 @@ from Fill_color import Fill_color
 import cv2
 
 class drawing_board(QWidget):
-
     def __init__(self):
         super().__init__()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 화면크기스케일링
