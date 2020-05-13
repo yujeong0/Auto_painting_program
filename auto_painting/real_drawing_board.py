@@ -7,6 +7,8 @@ from classification import classification
 from Fill_color import Fill_color
 import cv2
 
+from PyQt5.QtWidgets import QMessageBox
+
 class drawing_board(QWidget):
     def __init__(self):
         super().__init__()
@@ -173,6 +175,7 @@ class drawing_board(QWidget):
 
     def load_image(self):
         self.save_image()
+        self.msg_box('\"OK\" 버튼을 누르면 채색이 시작됩니다.\n누른 후, 잠시만 기다려주세요.')
         self.lbl_img.hide()     # 전 이미지 숨김
 
         label = classification().label  # 이미지 분류
@@ -180,7 +183,7 @@ class drawing_board(QWidget):
 
         fill = Fill_color(self.file, label)    #이미지 색칠
         self.file = fill.file
-        print(self.file)
+        # print(self.file)
 
         pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
 
@@ -188,6 +191,10 @@ class drawing_board(QWidget):
         self.lbl_img.setPixmap(pixmap)
         self.right2.addWidget(self.lbl_img)
 
+    def msg_box(self, text):
+        msgBox = QMessageBox()
+        msgBox.setText(text)
+        msgBox.exec()
 
 # QGraphicsView display QGraphicsScene
 class CView(QGraphicsView):
