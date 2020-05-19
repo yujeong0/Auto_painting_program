@@ -292,5 +292,4 @@ class Fill_color(object):
                                     color_img[i][j-l][k] = 0
                                 else:
                                     color_img[i][j-l][k] -= value
-
         return color_img
