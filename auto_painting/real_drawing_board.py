@@ -166,7 +166,7 @@ class drawing_board(QWidget):
         self.file = "./multi_img_data/imgs_others_test_sketch/" + filename
         img.save(self.file, 'png')
         img = cv2.imread(self.file, 0)
-        img = img[1:476, 1:663]
+        img = img[2:476, 2:663]     #사진 저장할 때 끝부분 모서리 지우기
         cv2.imwrite(self.file, img)
 
     def remove_all(self):
@@ -175,26 +175,32 @@ class drawing_board(QWidget):
 
     def load_image(self):
         self.save_image()
-        self.msg_box('\"OK\" 버튼을 누르면 채색이 시작됩니다.\n누른 후, 잠시만 기다려주세요.')
-        self.lbl_img.hide()     # 전 이미지 숨김
 
         label = classification().label  # 이미지 분류
         # print(label)
 
-        fill = Fill_color(self.file, label)    #이미지 색칠
-        self.file = fill.file
-        # print(self.file)
+        reply = self.msg_box('\"'+ label +'\"을 그린 게 맞다면 \"OK\" 버튼을, 다시 그리고 싶다면 \"NO\" 버튼을 눌러주세요.')
+        if reply == True:
+            self.lbl_img.hide()  # 전 이미지 숨김
+            fill = Fill_color(self.file, label)    #이미지 색칠
+            self.file = fill.file
+            # print(self.file)
 
-        pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
+            pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
 
-        self.lbl_img = QLabel()
-        self.lbl_img.setPixmap(pixmap)
-        self.right2.addWidget(self.lbl_img)
+            self.lbl_img = QLabel()
+            self.lbl_img.setPixmap(pixmap)
+            self.right2.addWidget(self.lbl_img)
 
     def msg_box(self, text):
         msgBox = QMessageBox()
         msgBox.setText(text)
-        msgBox.exec()
+        reply = msgBox.question(self, 'message', text, QMessageBox.Ok | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.No:
+            return False
+        else: return True
+
 
 # QGraphicsView display QGraphicsScene
 class CView(QGraphicsView):
@@ -213,7 +219,7 @@ class CView(QGraphicsView):
 
     def moveEvent(self, e):
         rect = QRectF(self.rect())
-        rect.adjust(0, 0, -2, -2)
+        rect.adjust(0, 0, -4, -4)
 
         self.scene.setSceneRect(rect)
 
