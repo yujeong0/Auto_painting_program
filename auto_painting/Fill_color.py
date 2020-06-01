@@ -191,15 +191,20 @@ class Fill_color(object):
                             color_img[i][j] = color[seg_cnt]
         elif label == 'flower':
             # 꽃
-            color = [0,212,255]
-            for seg_cnt in range(1):
+            center_circle = segmentation_img[150][150]
+            color = [0,255,255]
+            for seg_cnt in range(count - 1):
                 for i in range(len(segmentation_img)):
                     for j in range(len(segmentation_img[0])):
                         if segmentation_img[i][j] == color_count[seg_cnt]:
-                            color_img[i][j] = color[seg_cnt]
+                            color_img[i][j] = color
+            for i in range(0,300):
+                for j in range(0,300):
+                    if segmentation_img[i][j] == center_circle:
+                        color_img[i][j] = [0,0,160]
         elif label == 'leaf':
             # 잎
-            color = [0,180,0]
+            color = [20,160,20]
             for i in range(len(segmentation_img)):
                 for j in range(len(segmentation_img[0])):
                     if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
@@ -213,12 +218,15 @@ class Fill_color(object):
                         color_img[i][j] = color
         elif label == 'carrot':
             # 당근
-            color = [[0,0,255],[0,255,0]]
-            for seg_cnt in range(2):
+            color = [[38,67,243],[10,180,10]]
+            for seg_cnt in range(count - 1):
                 for i in range(len(segmentation_img)):
                     for j in range(len(segmentation_img[0])):
                         if segmentation_img[i][j] == color_count[seg_cnt]:
-                            color_img[i][j] = color[seg_cnt]
+                            if len(color)-1 <= seg_cnt:
+                                color_img[i][j] = color[-1]
+                            else:
+                                color_img[i][j] = color[seg_cnt]
         return color_img
 
     def return_size(self,img, return_num):
