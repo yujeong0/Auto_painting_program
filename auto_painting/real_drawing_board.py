@@ -13,10 +13,10 @@ class drawing_board(QWidget):
     def __init__(self):
         super().__init__()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 화면크기스케일링
+        self.setWindowTitle('PAINTING')
         self.file = ''
 
         self.formbox = QVBoxLayout()
-
         self.formbox1 = QHBoxLayout()
 
         self.left = QVBoxLayout()
